@@ -7,298 +7,154 @@
   <title>ATC Card</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0a0a;
-      --surface: #161616;
-      --surface2: #1e1e1e;
-      --border: #2a2a2a;
-      --text: #f5f5f5;
-      --text2: #999;
-      --text3: #555;
-    }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #f5f5f5;
       min-height: 100vh;
-      padding-bottom: max(env(safe-area-inset-bottom), 24px);
     }
-
-    /* Loading / error */
-    .center {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      min-height: 100vh; gap: 12px;
-      padding: 24px;
+    #root {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
     .spinner {
       width: 32px; height: 32px;
-      border: 2px solid var(--border);
-      border-top-color: var(--text2);
+      border: 2px solid #222;
+      border-top-color: #888;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .error-title { font-size: 18px; font-weight: 600; }
-    .error-sub { font-size: 14px; color: var(--text3); text-align: center; }
-
-    /* Page */
-    #page { display: none; }
-
-    .header {
-      padding: 20px 20px 0;
-    }
-    .header-logo {
-      font-size: 12px; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text3);
-    }
-
-    .hero { padding: 24px 20px 0; }
-    .card-img-wrap {
-      width: 100%; max-width: 300px;
-      margin: 0 auto 24px;
-      aspect-ratio: 2.5 / 3.5;
-      border-radius: 14px; overflow: hidden;
-      background: var(--surface2);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .no-img { font-size: 13px; color: var(--text3); }
-
-    .card-meta { padding: 0 20px 24px; }
-    .card-title { font-size: 26px; font-weight: 700; line-height: 1.2; letter-spacing: -0.3px; margin-bottom: 8px; }
-    .card-desc { font-size: 15px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
-
-    .people {
-      display: flex; gap: 24px;
-      padding: 16px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .person { display: flex; flex-direction: column; gap: 5px; }
-    .person-label {
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text3);
-    }
-    .person-row { display: flex; align-items: center; gap: 8px; }
-    .avatar {
-      width: 28px; height: 28px; border-radius: 50%;
-      object-fit: cover; background: var(--surface2);
-      flex-shrink: 0;
-    }
-    .avatar-placeholder {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: var(--surface2);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 600; color: var(--text2);
-      flex-shrink: 0;
-    }
-    .person-name { font-size: 14px; font-weight: 600; color: var(--text); }
-
-    .section { padding: 24px 20px 0; }
-    .section-label {
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 16px;
-    }
-    .activity-item {
-      display: flex; gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .activity-avatar .avatar,
-    .activity-avatar .avatar-placeholder {
-      width: 34px; height: 34px; font-size: 14px;
-    }
-    .activity-body { flex: 1; min-width: 0; }
-    .activity-user { font-size: 13px; font-weight: 700; color: var(--text); }
-    .activity-action { font-size: 13px; color: var(--text2); }
-    .activity-time { display: block; font-size: 11px; color: var(--text3); margin-top: 2px; }
-    .activity-desc { font-size: 13px; color: var(--text2); margin-top: 6px; line-height: 1.5; }
-    .activity-img {
-      display: block; width: 100%;
-      border-radius: 8px; margin-top: 10px;
-      aspect-ratio: 2.5 / 3.5; object-fit: cover;
-    }
-    .no-activity { font-size: 14px; color: var(--text3); padding: 16px 0 32px; }
-
-    .footer {
-      padding: 40px 20px 24px;
-      text-align: center;
-      font-size: 11px; color: var(--text3); letter-spacing: 0.05em;
-    }
   </style>
 </head>
 <body>
-
-<div id="loading" class="center">
-  <div class="spinner"></div>
-</div>
-
-<div id="error" class="center" style="display:none">
-  <div class="error-title">Card not found</div>
-  <div class="error-sub">This card may have been removed or the link is invalid.</div>
-</div>
-
-<div id="page" style="display:none">
-  <div class="header">
-    <span class="header-logo">Artist Trading Cards</span>
-  </div>
-
-  <div class="hero">
-    <div class="card-img-wrap" id="imgWrap"></div>
-  </div>
-
-  <div class="card-meta">
-    <h1 class="card-title" id="cardTitle"></h1>
-    <p class="card-desc" id="cardDesc" style="display:none"></p>
-    <div class="people" id="people"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Activity</div>
-    <div id="activity"></div>
-  </div>
-
-  <div class="footer">ATC &middot; <span id="year"></span></div>
-</div>
-
+<div id="root"><div class="spinner"></div></div>
 <script>
-  const API = 'https://tpmqqrpdlqochcctqeqy.supabase.co/functions/v1/card-page';
+const API = 'https://tpmqqrpdlqochcctqeqy.supabase.co/functions/v1/card-page';
 
-  document.getElementById('year').textContent = new Date().getFullYear();
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-  function esc(s) {
-    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function timeAgo(d) {
+  const s = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  if (s < 2592000) return Math.floor(s/86400) + 'd ago';
+  return new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
+function avatar(url, name, size) {
+  size = size || 28;
+  if (url) return '<img src="' + esc(url) + '" style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover;" alt=""/>';
+  var i = ((name || '?')[0]).toUpperCase();
+  return '<span style="display:inline-flex;align-items:center;justify-content:center;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:#1e1e1e;font-size:' + Math.round(size*0.45) + 'px;font-weight:600;color:#aaa;">' + esc(i) + '</span>';
+}
+
+function render(data) {
+  var card = data.card;
+  var updates = data.updates || [];
+  var trades = data.trades || [];
+  document.title = card.title + ' — ATC';
+
+  var imgHtml = card.image_url
+    ? '<img src="' + esc(card.image_url) + '" style="width:100%;height:100%;object-fit:cover;display:block;" alt=""/>'
+    : '<span style="font-size:13px;color:#555;">No image yet</span>';
+
+  var creator = card.creator || {};
+  var owner = card.current_owner || {};
+  var ownerHtml = creator.username !== owner.username ? (
+    '<div>' +
+    '<div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555;margin-bottom:5px;">Current Owner</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;">' + avatar(owner.avatar_url, owner.username) +
+    '<span style="font-size:14px;font-weight:600;">@' + esc(owner.username || '?') + '</span></div></div>'
+  ) : '';
+
+  var items = [];
+  updates.forEach(function(u) {
+    items.push({ date: u.created_at, html:
+      '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #1e1e1e;">' +
+      '<div style="flex-shrink:0;">' + avatar(u.user && u.user.avatar_url, u.user && u.user.username, 34) + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+      '<span style="font-size:13px;font-weight:700;">@' + esc((u.user && u.user.username) || '?') + '</span>' +
+      '<span style="font-size:13px;color:#888;"> added an update</span>' +
+      '<span style="display:block;font-size:11px;color:#555;margin-top:2px;">' + timeAgo(u.created_at) + '</span>' +
+      (u.description ? '<p style="font-size:13px;color:#888;margin-top:6px;line-height:1.5;">' + esc(u.description) + '</p>' : '') +
+      (u.image_url ? '<img src="' + esc(u.image_url) + '" style="display:block;width:100%;border-radius:8px;margin-top:10px;aspect-ratio:2.5/3.5;object-fit:cover;" alt=""/>' : '') +
+      '</div></div>'
+    });
+  });
+  trades.forEach(function(t) {
+    var from = t.from_user || {};
+    var to = t.to_user || {};
+    items.push({ date: t.traded_at, html:
+      '<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #1e1e1e;">' +
+      '<div style="flex-shrink:0;">' + avatar(from.avatar_url, from.username, 34) + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+      '<span style="font-size:13px;font-weight:700;">@' + esc(from.username || '?') + '</span>' +
+      '<span style="font-size:13px;color:#888;"> traded to </span>' +
+      '<span style="font-size:13px;font-weight:700;">@' + esc(to.username || '?') + '</span>' +
+      '<span style="display:block;font-size:11px;color:#555;margin-top:2px;">' + timeAgo(t.traded_at) + '</span>' +
+      (t.description ? '<p style="font-size:13px;color:#888;margin-top:6px;line-height:1.5;">' + esc(t.description) + '</p>' : '') +
+      (t.image_url ? '<img src="' + esc(t.image_url) + '" style="display:block;width:100%;border-radius:8px;margin-top:10px;aspect-ratio:2.5/3.5;object-fit:cover;" alt=""/>' : '') +
+      '</div></div>'
+    });
+  });
+  items.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+  var actHtml = items.length > 0
+    ? items.map(function(i) { return i.html; }).join('')
+    : '<p style="font-size:14px;color:#555;padding:16px 0;">No activity yet.</p>';
+
+  document.getElementById('root').innerHTML =
+    '<div style="max-width:480px;margin:0 auto;padding-bottom:40px;">' +
+
+    '<div style="padding:20px 20px 0;">' +
+    '<span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555;">Artist Trading Cards</span>' +
+    '</div>' +
+
+    '<div style="padding:24px 20px 0;">' +
+    '<div style="width:100%;max-width:300px;margin:0 auto 24px;aspect-ratio:2.5/3.5;border-radius:14px;overflow:hidden;background:#1e1e1e;display:flex;align-items:center;justify-content:center;">' +
+    imgHtml + '</div></div>' +
+
+    '<div style="padding:0 20px 24px;">' +
+    '<h1 style="font-size:26px;font-weight:700;line-height:1.2;letter-spacing:-.3px;margin-bottom:8px;">' + esc(card.title) + '</h1>' +
+    (card.description ? '<p style="font-size:15px;color:#888;line-height:1.6;margin-bottom:20px;">' + esc(card.description) + '</p>' : '') +
+    '<div style="display:flex;gap:24px;padding:16px 0;border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e;">' +
+    '<div>' +
+    '<div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555;margin-bottom:5px;">Creator</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;">' + avatar(creator.avatar_url, creator.username) +
+    '<span style="font-size:14px;font-weight:600;">@' + esc(creator.username || '?') + '</span></div></div>' +
+    ownerHtml +
+    '</div></div>' +
+
+    '<div style="padding:24px 20px 0;">' +
+    '<div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#555;margin-bottom:16px;">Activity</div>' +
+    actHtml + '</div>' +
+
+    '<div style="padding:40px 20px 24px;text-align:center;font-size:11px;color:#555;">ATC &middot; ' + new Date().getFullYear() + '</div>' +
+    '</div>';
+}
+
+async function load() {
+  var id = new URLSearchParams(window.location.search).get('id');
+  if (!id) {
+    document.getElementById('root').innerHTML = '<div style="text-align:center;padding:40px;"><h2 style="margin-bottom:8px;">No card ID</h2><p style="color:#555;font-size:14px;">Check the URL.</p></div>';
+    return;
   }
-
-  function timeAgo(dateStr) {
-    const s = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-    if (s < 60) return 'just now';
-    if (s < 3600) return `${Math.floor(s/60)}m ago`;
-    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
-    if (s < 86400*30) return `${Math.floor(s/86400)}d ago`;
-    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  try {
+    var res = await fetch(API + '?id=' + encodeURIComponent(id));
+    var data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Not found');
+    render(data);
+  } catch(e) {
+    document.getElementById('root').innerHTML = '<div style="text-align:center;padding:40px;"><h2 style="margin-bottom:8px;">Card not found</h2><p style="color:#555;font-size:14px;">' + esc(e.message) + '</p></div>';
   }
+}
 
-  function avatarEl(url, username, size) {
-    const sz = size || 28;
-    if (url) return `<img class="avatar" src="${esc(url)}" style="width:${sz}px;height:${sz}px" alt=""/>`;
-    const initial = (username?.[0] ?? '?').toUpperCase();
-    return `<span class="avatar-placeholder" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*0.45)}px">${esc(initial)}</span>`;
-  }
-
-  async function load() {
-    const id = new URLSearchParams(window.location.search).get('id');
-    if (!id) { showError(); return; }
-
-    try {
-      const res = await fetch(`${API}?id=${encodeURIComponent(id)}`);
-      const json = await res.json();
-      if (!res.ok || json.error) { showError(); return; }
-      render(json);
-    } catch(e) {
-      console.error('ATC load error:', e);
-      showError();
-    }
-  }
-
-  window.onerror = function(msg, src, line, col, err) {
-    console.error('ATC render error:', msg, 'line', line, err);
-  };
-
-  function showError() {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').style.display = 'flex';
-  }
-
-  function render({ card, updates, trades }) {
-    document.title = `${card.title} — ATC`;
-
-    // Image
-    const imgWrap = document.getElementById('imgWrap');
-    if (card.image_url) {
-      imgWrap.innerHTML = `<img src="${esc(card.image_url)}" alt="${esc(card.title)}"/>`;
-    } else {
-      imgWrap.innerHTML = `<span class="no-img">No image yet</span>`;
-    }
-
-    // Title + desc
-    document.getElementById('cardTitle').textContent = card.title;
-    const descEl = document.getElementById('cardDesc');
-    if (card.description) {
-      descEl.textContent = card.description;
-      descEl.style.display = '';
-    }
-
-    // People
-    const creator = card.creator;
-    const owner = card.current_owner;
-    const sameUser = creator?.username === owner?.username;
-    let peopleHtml = `
-      <div class="person">
-        <span class="person-label">Creator</span>
-        <div class="person-row">
-          ${avatarEl(creator?.avatar_url, creator?.username)}
-          <span class="person-name">@${esc(creator?.username ?? '?')}</span>
-        </div>
-      </div>`;
-    if (!sameUser) {
-      peopleHtml += `
-      <div class="person">
-        <span class="person-label">Current Owner</span>
-        <div class="person-row">
-          ${avatarEl(owner?.avatar_url, owner?.username)}
-          <span class="person-name">@${esc(owner?.username ?? '?')}</span>
-        </div>
-      </div>`;
-    }
-    document.getElementById('people').innerHTML = peopleHtml;
-
-    // Activity
-    const items = [];
-    for (const u of updates) {
-      items.push({ date: u.created_at, html: `
-        <div class="activity-item">
-          <div class="activity-avatar">${avatarEl(u.user?.avatar_url, u.user?.username, 34)}</div>
-          <div class="activity-body">
-            <span class="activity-user">@${esc(u.user?.username ?? '?')}</span>
-            <span class="activity-action"> added an update</span>
-            <span class="activity-time">${timeAgo(u.created_at)}</span>
-            ${u.description ? `<p class="activity-desc">${esc(u.description)}</p>` : ''}
-            ${u.image_url ? `<img class="activity-img" src="${esc(u.image_url)}" alt=""/>` : ''}
-          </div>
-        </div>`});
-    }
-    for (const t of trades) {
-      items.push({ date: t.traded_at, html: `
-        <div class="activity-item">
-          <div class="activity-avatar">${avatarEl(t.from_user?.avatar_url, t.from_user?.username, 34)}</div>
-          <div class="activity-body">
-            <span class="activity-user">@${esc(t.from_user?.username ?? '?')}</span>
-            <span class="activity-action"> traded to </span>
-            <span class="activity-user">@${esc(t.to_user?.username ?? '?')}</span>
-            <span class="activity-time">${timeAgo(t.traded_at)}</span>
-            ${t.description ? `<p class="activity-desc">${esc(t.description)}</p>` : ''}
-            ${t.image_url ? `<img class="activity-img" src="${esc(t.image_url)}" alt=""/>` : ''}
-          </div>
-        </div>`});
-    }
-
-    items.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    const actEl = document.getElementById('activity');
-    actEl.innerHTML = items.length > 0
-      ? items.map(i => i.html).join('')
-      : `<p class="no-activity">No activity yet.</p>`;
-
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('page').style.display = '';
-  }
-
-  load();
+load();
 </script>
 </body>
 </html>
