@@ -200,9 +200,14 @@
       if (!res.ok || json.error) { showError(); return; }
       render(json);
     } catch(e) {
+      console.error('ATC load error:', e);
       showError();
     }
   }
+
+  window.onerror = function(msg, src, line, col, err) {
+    console.error('ATC render error:', msg, 'line', line, err);
+  };
 
   function showError() {
     document.getElementById('loading').style.display = 'none';
